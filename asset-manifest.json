@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/microtab/static/css/main.747c4f11.css",
+    "main.js": "/microtab/static/js/main.a003c46d.js",
+    "index.html": "/microtab/index.html",
+    "main.747c4f11.css.map": "/microtab/static/css/main.747c4f11.css.map",
+    "main.a003c46d.js.map": "/microtab/static/js/main.a003c46d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.747c4f11.css",
+    "static/js/main.a003c46d.js"
+  ]
+}
