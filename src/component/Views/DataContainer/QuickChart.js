@@ -1,72 +1,58 @@
-import React from 'react';
+import React from "react";
 
-import styles from './Chart.module.css';
+import styles from "./Chart.module.css";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import bellCurve from 'highcharts/modules/histogram-bellcurve'; //module
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
-bellCurve(Highcharts); //init module
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const QuickChart = () => {
   const selectedData = useSelector((state) => state.mydata.selectedData);
-
+  const selectedHeaders = useSelector((state) => state.mydata.selectedHeaders);
   const options = {
-    chart: {
-      height: 300,
-      zoomType: 'xy',
-      labels: {
-        enabled: false,
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: false,
+        text: "Chart.js Line Chart",
       },
     },
-    boost: {
-      useGPUTranslations: true,
-    },
-    title: { text: null },
-    xAxis: [
-      {
-        title: { text: null },
-        alignTicks: false,
-      },
-      {
-        title: { text: null },
-        alignTicks: false,
-        opposite: true,
-      },
-    ],
-
-    yAxis: [
-      {
-        title: { text: null },
-      },
-      {
-        title: { text: null },
-        opposite: true,
-      },
-    ],
-    plotOptions: {
-      histogram: {
-        accessibility: {
-          point: {
-            valueDescriptionFormat:
-              '{index}. {point.x:.3f} to {point.x2:.3f}, {point.y}.',
-          },
-        },
-      },
-    },
-
-    series: selectedData,
   };
+  let labels = [];
+  if (selectedData[0]) labels = selectedData[0].data.map((a, i) => i);
+
+  const data = {
+    labels,
+    datasets: selectedData,
+  };
+  // console.log(data)
+
   return (
     <div className={styles.ChartBox}>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        // ref={chartComponentRef}
-        // {...props}
-      />
+      <Line options={options} data={data} />
     </div>
   );
 };

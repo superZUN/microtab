@@ -39,7 +39,9 @@ Graph analysis
 - correlation : Pearson correlation coefficient (https://en.wikipedia.org/wiki/Pearson_correlation_coefficient)
   https://www.npmjs.com/package/calculate-correlation
 
-7/3
+7/3df
 
 - multi selection에 대한 quick chart (histogram, series, correlation) 기능 추가
 - 다중 correlation 시 열 이름 출력
+
+https://velog.io/@byjihye/react-github-pages

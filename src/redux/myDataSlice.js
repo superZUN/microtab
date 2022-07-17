@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from "@reduxjs/toolkit";
 
-import * as statFuncs from './statFunctions';
-import * as myFuncs from './myDataSliceFunction';
-import Arraystat from 'arraystat';
+import * as statFuncs from "./statFunctions";
+import * as myFuncs from "./myDataSliceFunction";
+import Arraystat from "arraystat";
 
 // export const mydataState = () => {
 //   myData: [];
@@ -15,14 +15,19 @@ import Arraystat from 'arraystat';
 //   selectedDataBox: [];
 // };
 
+const DATA_CNT = 1000;
+
 const genInitData = (r, c) => {
   let arr = [];
   for (let i = 0; i < r; i++) {
     let row = [];
     for (let j = 0; j < c; j++) {
-      j % 2 === 0
-        ? row.push(Math.random() * (i + 1) * Math.cos(i + 1))
-        : row.push(Math.random() * (i + 1) * Math.sin(i + 1));
+      if (j % 3 === 0) row.push(Math.random() * (i + 1) * Math.cos(i + 1));
+      else if (j % 3 === 1)
+        row.push(
+          (Math.random() * (i + 1) * Math.sin(i + 1) * Math.sin(i + 1)) / 2
+        );
+      else if (j % 3 === 2) row.push(Math.random() * 100 + j * 100);
       // row.push(null);
     }
     arr.push(row);
@@ -32,45 +37,46 @@ const genInitData = (r, c) => {
 };
 
 const initialState = {
-  myData: genInitData(50, 26),
+  myData: genInitData(DATA_CNT, 26),
   selectedData: [],
   selectedDataCorr: [],
   selectedDataIsAvailable: false,
   colHeaders: [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    'AA',
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "AA",
   ],
   selectedHeaders: [],
   selectedDataBox: [],
+  selectedDataHistogram: [],
 };
 
 export const mydataSlice = createSlice({
-  name: 'myData',
+  name: "myData",
   initialState,
   reducers: {
     initialize: (state) => {
@@ -88,8 +94,6 @@ export const mydataSlice = createSlice({
       action.payload.forEach(([row, column, oldValue, newValue]) => {
         let rows = newData.length;
         let cols = newData[0].length;
-        // console.log('row:', row, rows);
-        // console.log('col:', column, cols);
         if (row >= rows) {
           newData.push([]);
         }
@@ -105,7 +109,8 @@ export const mydataSlice = createSlice({
     updateSelection: (state, action) => {
       let c1, c2, r1, r2, l;
 
-      const data = [...state.myData];
+      const data = current(state.myData);
+      // console.log(current(state.myData));
 
       let selection = [];
 
@@ -119,28 +124,26 @@ export const mydataSlice = createSlice({
       l = action.payload.l;
 
       //layerLevel에 따라 데이터 비우거나 추가하기
-      l === 0
-        ? (state.selectedData = [])
-        : (state.selectedData = [...state.selectedData]);
-      //box plot용 데이터
-      l === 0
-        ? (state.selectedDataBox = [])
-        : (state.selectedDataBox = [...state.selectedDataBox]);
-
-      //colHeader 가져오기
-      l === 0
-        ? (state.selectedHeaders = [])
-        : (state.selectedHeaders = [...state.selectedHeaders]);
-      for (let i = c1; i <= c2; i++) {
-        // console.log(i);
-        state.selectedHeaders.push(state.colHeaders[i]);
+      if (l === 0) {
+        state.selectedHeaders = [];
+        state.selectedData = [];
+        state.selectedDataBox = [];
+        state.selectedDataHistogram = [];
+      } else {
+        state.selectedData = [...state.selectedData];
+        state.selectedDataBox = [...state.selectedDataBox];
+        state.selectedHeaders = [...state.selectedHeaders];
+        state.selectedDataHistogram = [...state.selectedDataHistogram];
       }
+      console.log("payload", action.payload);
+      console.log("payload", state.selectedHeaders);
+
       // console.log('selectedHeader:', state.selectedHeaders);
 
       //data 유효성 검사 :데이터가 하나라도 있으면 flag=true
       for (let c = c1; c <= c2; c++) {
         for (let r = r1; r <= r2; r++) {
-          if(data[r][c] != null) dataFlag = true
+          if (data[r][c] != null) dataFlag = true;
         }
       }
 
@@ -152,33 +155,34 @@ export const mydataSlice = createSlice({
             data[r][c] != null ? tmpRow.push(data[r][c]) : tmpRow.push();
           }
           selection.push(tmpRow);
+          state.selectedHeaders.push(state.colHeaders[c]);
         }
       } else {
         selection.push([0]);
       }
-
-      //plot 그리기 용
+      console.log("selectedHeaders", state.selectedHeaders);
       //공통 State update
       for (let i = 0; i <= c2 - c1; i++) {
-        // let plotData = { type: 'histogram', data: selection[i] };
-        let plotHistogram = {
-          name: 'Data' + (i + l),
-          type: 'histogram',
-          xAxis: 1,
-          yAxis: 1,
-          baseSeries: 'pData' + (i + l),
-
-          zIndex: -1,
-        };
-        let plotScatter = {
-          name: 'Data' + (i + l),
-          type: 'scatter',
+        let cnt = state.selectedHeaders.length - 1 - (c2 - c1) + i;
+        let plotHistogram = myFuncs.getHistogramData(selection[i]);
+        let plotLine = {
+          label: state.selectedHeaders[cnt],
           data: selection[i],
-          id: 'pData' + (i + l),
-          marker: {
-            radius: 1.5,
-          },
+          borderColor: myFuncs.colorSet[cnt][0],
+          backgroundColor: myFuncs.colorSet[cnt][1],
         };
+        console.log(state.selectedHeaders, plotLine);
+        // let plotScatter = {
+        //   name: "Data" + (i + l),
+        //   type: "scatter",
+        //   data: selection[i],
+        //   id: "pData" + (i + l),
+        //   marker: {
+        //     radius: 1.5,
+        //   },
+        // };
+
+        //boxplot
         let boxData = [
           Arraystat(selection[i]).min,
           Arraystat(selection[i]).q1,
@@ -188,20 +192,20 @@ export const mydataSlice = createSlice({
         ];
 
         // state.selectedData.push(plotData);
-        state.selectedData.push(plotHistogram);
-        state.selectedData.push(plotScatter);
+        // state.selectedData.push(plotHistogram);
+        state.selectedData.push(plotLine);
+        state.selectedDataHistogram.push(plotHistogram);
         state.selectedDataBox.push(boxData);
       }
-      // console.log('selectedDataBox:', state.selectedDataBox);
 
       //2*5 이상일 때 상관계수 분석
       if (
-        state.selectedData.length >= 4 &&
+        state.selectedData.length >= 2 &&
         state.selectedData[1].data.length >= 5
       ) {
         let corrResult = [];
-        for (let i = 0; i < state.selectedData.length / 2 - 1; i++) {
-          for (let j = i + 1; j < state.selectedData.length / 2; j++) {
+        for (let i = 0; i < state.selectedData.length; i++) {
+          for (let j = i + 1; j < state.selectedData.length; j++) {
             // console.log('d1:', state.selectedData[(i + 1) * 2 - 1].data);
             // console.log('d2:', state.selectedData[j * 2 - 1].data);
 
@@ -209,8 +213,8 @@ export const mydataSlice = createSlice({
               state.selectedHeaders[i],
               state.selectedHeaders[j],
               statFuncs.getCorrelation(
-                state.selectedData[(i + 1) * 2 - 1].data,
-                state.selectedData[(j + 1) * 2 - 1].data
+                state.selectedData[i].data,
+                state.selectedData[j].data
               ),
               // ttest(selection[i], selection[j], { mu: 0 }).pValue(),
             ]);
@@ -221,6 +225,7 @@ export const mydataSlice = createSlice({
       } else {
         state.selectedDataCorr = null;
       }
+      // console.log(state.selectedDataCorr);
     },
   },
 });

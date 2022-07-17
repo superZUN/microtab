@@ -1,11 +1,11 @@
 .hotTable {
-    width: 10000px;
-    height: 50000px;
-    overflow: scroll;
-  }
-  .QuickChart {
-    width: 90vw;
-    background-color: red;
-    display: flex;
-    align-items: stretch;
-  }
+  width: 10000px;
+  height: 50000px;
+  overflow: scroll;
+}
+.QuickChart {
+  width: 90vw;
+  background-color: white;
+  display: flex;
+  align-items: stretch;
+}
