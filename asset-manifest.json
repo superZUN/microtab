@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/microtab/static/css/main.152a8276.css",
-    "main.js": "/microtab/static/js/main.3cc0c026.js",
+    "main.js": "/microtab/static/js/main.b3d948a1.js",
     "index.html": "/microtab/index.html",
     "main.152a8276.css.map": "/microtab/static/css/main.152a8276.css.map",
-    "main.3cc0c026.js.map": "/microtab/static/js/main.3cc0c026.js.map"
+    "main.b3d948a1.js.map": "/microtab/static/js/main.b3d948a1.js.map"
   },
   "entrypoints": [
     "static/css/main.152a8276.css",
-    "static/js/main.3cc0c026.js"
+    "static/js/main.b3d948a1.js"
   ]
 }
