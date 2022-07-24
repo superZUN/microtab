@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import styles from "./DataContainer.module.css";
 import QuickChart from "./DataContainer/QuickChart";
 import QuickHistogram from "./DataContainer/QuickHistogram";
-// import QuickBoxPlot from "./DataContainer/QuickBoxPlot";
+import QuickBoxPlot from "./DataContainer/QuickBoxPlot";
 import CorrChart from "./DataContainer/CorrChart";
 
 import "handsontable/dist/handsontable.full.css";

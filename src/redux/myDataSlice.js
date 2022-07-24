@@ -211,6 +211,8 @@ export const mydataSlice = createSlice({
             // console.log('d2:', state.selectedData[j * 2 - 1].data);
 
             corrResult.push([
+              i,
+              j,
               state.selectedHeaders[i],
               state.selectedHeaders[j],
               statFuncs.getCorrelation(
