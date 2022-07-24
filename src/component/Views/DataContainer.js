@@ -1,8 +1,9 @@
 import * as React from "react";
+import { useEffect } from "react";
 import styles from "./DataContainer.module.css";
 import QuickChart from "./DataContainer/QuickChart";
 import QuickHistogram from "./DataContainer/QuickHistogram";
-import QuickBoxPlot from "./DataContainer/QuickBoxPlot";
+// import QuickBoxPlot from "./DataContainer/QuickBoxPlot";
 import CorrChart from "./DataContainer/CorrChart";
 
 import "handsontable/dist/handsontable.full.css";
@@ -52,6 +53,21 @@ const DataContainer = () => {
       })
     );
   };
+
+  useEffect(() => {
+    const keyDownHandler = (event) => {
+      if (event.key === "/") {
+        event.preventDefault();
+
+        // 👇️ your logic here
+        window.prompt("sometext", "defaultText");
+      }
+    };
+    document.addEventListener("keydown", keyDownHandler);
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, []);
 
   return (
     <div id="hot-app">

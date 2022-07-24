@@ -100,7 +100,9 @@ export const mydataSlice = createSlice({
         if (column >= cols) {
           for (let i = 0; i < newData.length; i++) newData[i].push(null);
         }
-        newData[row][column] = newValue * 1;
+        newValue === null
+          ? (newData[row][column] = null)
+          : (newData[row][column] = newValue * 1);
         // console.log(newData);
       });
 
@@ -135,8 +137,8 @@ export const mydataSlice = createSlice({
         state.selectedHeaders = [...state.selectedHeaders];
         state.selectedDataHistogram = [...state.selectedDataHistogram];
       }
-      console.log("payload", action.payload);
-      console.log("payload", state.selectedHeaders);
+      // console.log("payload", action.payload);
+      // console.log("payload", state.selectedHeaders);
 
       // console.log('selectedHeader:', state.selectedHeaders);
 
@@ -146,13 +148,21 @@ export const mydataSlice = createSlice({
           if (data[r][c] != null) dataFlag = true;
         }
       }
-
+      // dataFlag = true;
       //check data is available?
       if (dataFlag) {
         for (let c = c1; c <= c2; c++) {
           let tmpRow = [];
           for (let r = r1; r <= r2; r++) {
-            data[r][c] != null ? tmpRow.push(data[r][c]) : tmpRow.push();
+            //null data가 나오면 -> null 이후에 data가 있나 확인하고, 데이터를 추가함
+            if (data[r][c] === null) {
+              let checkEOD = true;
+              for (let i = r; i <= r2; i++) {
+                checkEOD = data[i][c] != null ? false : checkEOD;
+              }
+              if (checkEOD) break;
+            }
+            tmpRow.push(data[r][c]);
           }
           selection.push(tmpRow);
           state.selectedHeaders.push(state.colHeaders[c]);
@@ -160,28 +170,19 @@ export const mydataSlice = createSlice({
       } else {
         selection.push([0]);
       }
-      console.log("selectedHeaders", state.selectedHeaders);
+      // console.log("selectedHeaders", state.selectedHeaders);
       //공통 State update
       for (let i = 0; i <= c2 - c1; i++) {
         let cnt = state.selectedHeaders.length - 1 - (c2 - c1) + i;
+        cnt = cnt < 0 ? 0 : cnt;
         let plotHistogram = myFuncs.getHistogramData(selection[i]);
+
         let plotLine = {
           label: state.selectedHeaders[cnt],
           data: selection[i],
           borderColor: myFuncs.colorSet[cnt][0],
           backgroundColor: myFuncs.colorSet[cnt][1],
         };
-        console.log(state.selectedHeaders, plotLine);
-        // let plotScatter = {
-        //   name: "Data" + (i + l),
-        //   type: "scatter",
-        //   data: selection[i],
-        //   id: "pData" + (i + l),
-        //   marker: {
-        //     radius: 1.5,
-        //   },
-        // };
-
         //boxplot
         let boxData = [
           Arraystat(selection[i]).min,

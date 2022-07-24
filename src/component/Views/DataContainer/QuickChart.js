@@ -28,7 +28,7 @@ ChartJS.register(
 
 const QuickChart = () => {
   const selectedData = useSelector((state) => state.mydata.selectedData);
-  const selectedHeaders = useSelector((state) => state.mydata.selectedHeaders);
+  // const selectedHeaders = useSelector((state) => state.mydata.selectedHeaders);
   const options = {
     responsive: true,
     plugins: {
